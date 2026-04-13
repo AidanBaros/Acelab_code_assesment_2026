@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Acelab — Material Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #F6F6F3;
+      --surface:      #FFFFFF;
+      --border:       #E4E4DF;
+      --border-light: #EFEFEB;
+      --text:         #111110;
+      --text-muted:   #78786E;
+      --text-light:   #A3A39A;
+      --accent:       #18794E;
+      --accent-bg:    #EEF9F4;
+      --accent-dim:   #D1EDDF;
+      --header:       #111110;
+      --tag-bg:       #F0F0EC;
+      --shadow:       0 1px 3px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.04);
+      --radius:       10px;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--header);
+      border-bottom: 1px solid #1f1f1e;
+      padding: 0 32px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo-mark {
+      width: 26px;
+      height: 26px;
+      background: var(--accent);
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-mark svg { display: block; }
+
+    header h1 {
+      font-size: 15px;
+      font-weight: 600;
+      color: #FFFFFF;
+      letter-spacing: -0.01em;
+    }
+
+    .header-tag {
+      margin-left: 2px;
+      font-size: 11px;
+      font-weight: 500;
+      color: #5A5A52;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border: 1px solid #2A2A28;
+      border-radius: 4px;
+    }
+
+    /* ── Search bar ── */
+    .search-wrap {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 32px;
+      position: sticky;
+      top: 56px;
+      z-index: 90;
+    }
+
+    .search-inner {
+      max-width: 820px;
+      margin: 0 auto;
+      display: flex;
+      gap: 10px;
+    }
+
+    .search-input {
+      flex: 1;
+      height: 42px;
+      padding: 0 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--text);
+      background: var(--bg);
+      transition: border-color 0.15s, box-shadow 0.15s;
+      outline: none;
+    }
+
+    .search-input::placeholder { color: var(--text-light); }
+
+    .search-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(24, 121, 78, 0.1);
+      background: #fff;
+    }
+
+    .search-btn {
+      height: 42px;
+      padding: 0 18px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      transition: background 0.15s, opacity 0.15s;
+      white-space: nowrap;
+    }
+
+    .search-btn:hover { background: #146840; }
+    .search-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    /* ── Main content ── */
+    main {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 28px 32px 64px;
+    }
+
+    /* ── Empty state ── */
+    .empty-state {
+      text-align: center;
+      padding: 80px 0;
+    }
+
+    .empty-icon {
+      width: 56px;
+      height: 56px;
+      background: var(--tag-bg);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 18px;
+    }
+
+    .empty-state h2 {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .empty-state p {
+      color: var(--text-muted);
+      max-width: 400px;
+      margin: 0 auto 24px;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .example-queries {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .example-chip {
+      padding: 7px 13px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+
+    .example-chip:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-bg);
+    }
+
+    /* ── Result card ── */
+    .result-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .card-query-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-light);
+      gap: 12px;
+    }
+
+    .card-query-text {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      flex: 1;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-query-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      flex-shrink: 0;
+    }
+
+    /* ── Progress section ── */
+    .progress-section {
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .progress-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 18px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .progress-header:hover { background: var(--bg); }
+
+    .progress-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .progress-spinner {
+      width: 12px;
+      height: 12px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    .progress-done-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .progress-chevron {
+      color: var(--text-light);
+      font-size: 11px;
+      transition: transform 0.2s;
+    }
+
+    .progress-chevron.open { transform: rotate(180deg); }
+
+    .progress-body {
+      padding: 4px 18px 14px;
+      display: none;
+    }
+
+    .progress-body.visible { display: block; }
+
+    .phase-line {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      padding: 4px 0;
+    }
+
+    .plan-line {
+      font-size: 12px;
+      color: var(--text-muted);
+      padding: 3px 0 3px 10px;
+      border-left: 2px solid var(--border);
+      margin: 3px 0;
+    }
+
+    .tool-line {
+      font-size: 11.5px;
+      color: var(--text-light);
+      padding: 2px 0 2px 10px;
+      border-left: 2px solid var(--border-light);
+      margin: 2px 0;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+
+    .tool-name {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* ── Recommendations ── */
+    .recommendations {
+      padding: 22px 24px 24px;
+    }
+
+    /* markdown rendering */
+    .recommendations h1,
+    .recommendations h2,
+    .recommendations h3 {
+      font-weight: 600;
+      color: var(--text);
+      margin: 20px 0 10px;
+      line-height: 1.35;
+    }
+
+    .recommendations h1 { font-size: 18px; }
+    .recommendations h2 { font-size: 16px; }
+    .recommendations h3 { font-size: 14px; border-bottom: 1px solid var(--border-light); padding-bottom: 6px; }
+
+    .recommendations p { margin-bottom: 12px; color: var(--text); line-height: 1.7; }
+    .recommendations ul, .recommendations ol { margin: 0 0 12px 18px; }
+    .recommendations li { margin-bottom: 4px; line-height: 1.65; }
+    .recommendations strong { font-weight: 600; color: var(--text); }
+    .recommendations em { color: var(--text-muted); }
+
+    .recommendations hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 20px 0;
+    }
+
+    /* ── Error ── */
+    .error-box {
+      padding: 14px 18px;
+      background: #FEF2F2;
+      border-top: 1px solid #FECACA;
+      color: #991B1B;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 600px) {
+      header { padding: 0 16px; }
+      .search-wrap { padding: 14px 16px; }
+      main { padding: 20px 16px 48px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo-mark">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <rect x="1" y="1" width="5" height="5" rx="1" fill="white" opacity="0.9"/>
+      <rect x="8" y="1" width="5" height="5" rx="1" fill="white" opacity="0.6"/>
+      <rect x="1" y="8" width="5" height="5" rx="1" fill="white" opacity="0.6"/>
+      <rect x="8" y="8" width="5" height="5" rx="1" fill="white" opacity="0.9"/>
+    </svg>
+  </div>
+  <h1>Acelab</h1>
+  <span class="header-tag">Material Intelligence</span>
+</header>
+
+<div class="search-wrap">
+  <div class="search-inner">
+    <input
+      id="queryInput"
+      class="search-input"
+      type="text"
+      placeholder="Describe your project — space type, requirements, certifications, budget..."
+      autocomplete="off"
+    />
+    <button id="searchBtn" class="search-btn" onclick="startSearch()">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+        <circle cx="6.5" cy="6.5" r="4.5" stroke="white" stroke-width="1.5"/>
+        <path d="M10 10L14 14" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      Find Materials
+    </button>
+  </div>
+</div>
+
+<main id="main">
+  <div class="empty-state" id="emptyState">
+    <div class="empty-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M3 6h18M3 12h18M3 18h18" stroke="#A3A39A" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h2>Find the right material for any project</h2>
+    <p>Describe your space, requirements, certifications, and budget. The agent will search across the full Acelab catalog and return ranked recommendations.</p>
+    <div class="example-queries">
+      <span class="example-chip" onclick="useExample(this)">High-traffic hospital corridor, infection control, LEED Silver, mid-range budget</span>
+      <span class="example-chip" onclick="useExample(this)">Luxury hotel lobby flooring, premium aesthetic, acoustic performance</span>
+      <span class="example-chip" onclick="useExample(this)">K–12 classroom with durability requirements, low VOC, tight budget</span>
+      <span class="example-chip" onclick="useExample(this)">Open-plan office, biophilic design, FSC certified, mid-range</span>
+    </div>
+  </div>
+  <div id="results"></div>
+</main>
+
+<script>
+  const input = document.getElementById('queryInput');
+  const btn   = document.getElementById('searchBtn');
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) startSearch();
+  });
+
+  function useExample(el) {
+    input.value = el.textContent;
+    input.focus();
+  }
+
+  function startSearch() {
+    const query = input.value.trim();
+    if (!query || btn.disabled) return;
+
+    document.getElementById('emptyState').style.display = 'none';
+    btn.disabled = true;
+
+    const card = createCard(query);
+    document.getElementById('results').prepend(card);
+
+    const evtSource = new EventSource('/search-stream?' + new URLSearchParams({ q: query }));
+
+    evtSource.onmessage = e => {
+      const msg = JSON.parse(e.data);
+      handleEvent(card, msg);
+
+      if (msg.type === 'result' || msg.type === 'error') {
+        evtSource.close();
+        btn.disabled = false;
+        finishProgress(card, msg.type === 'result');
+      }
+    };
+
+    evtSource.onerror = () => {
+      evtSource.close();
+      btn.disabled = false;
+      showError(card, 'Connection error — please try again.');
+      finishProgress(card, false);
+    };
+  }
+
+  /* ── Card construction ── */
+  function createCard(query) {
+    const card = document.createElement('div');
+    card.className = 'result-card';
+    card.innerHTML = `
+      <div class="card-query-bar">
+        <span class="card-query-label">Query</span>
+        <span class="card-query-text">${escHtml(query)}</span>
+      </div>
+      <div class="progress-section">
+        <div class="progress-header" onclick="toggleProgress(this)">
+          <div class="progress-title">
+            <div class="progress-spinner" data-spinner></div>
+            <span data-progress-label>Initializing…</span>
+          </div>
+          <span class="progress-chevron open">▾</span>
+        </div>
+        <div class="progress-body visible" data-progress-body></div>
+      </div>
+      <div class="recommendations" data-recs style="display:none"></div>
+    `;
+    return card;
+  }
+
+  function toggleProgress(header) {
+    const body    = header.nextElementSibling;
+    const chevron = header.querySelector('.progress-chevron');
+    const open    = body.classList.toggle('visible');
+    chevron.classList.toggle('open', open);
+  }
+
+  /* ── Event handling ── */
+  function handleEvent(card, msg) {
+    const body  = card.querySelector('[data-progress-body]');
+    const label = card.querySelector('[data-progress-label]');
+
+    if (msg.type === 'phase') {
+      label.textContent = msg.data;
+      const line = document.createElement('div');
+      line.className = 'phase-line';
+      line.textContent = '→ ' + msg.data;
+      body.appendChild(line);
+      body.scrollTop = body.scrollHeight;
+
+    } else if (msg.type === 'plan') {
+      const plan = JSON.parse(msg.data);
+      const line = document.createElement('div');
+      line.className = 'plan-line';
+      line.textContent = plan.summary + ' · ' + plan.search_count + ' searches planned';
+      body.appendChild(line);
+
+    } else if (msg.type === 'tool') {
+      const [toolName, ...rest] = msg.data.split(':');
+      const queryText = rest.join(':');
+      const line = document.createElement('div');
+      line.className = 'tool-line';
+      line.innerHTML = `<span class="tool-name">${escHtml(toolName)}</span> ${escHtml(queryText)}`;
+      body.appendChild(line);
+
+    } else if (msg.type === 'result') {
+      const recs = card.querySelector('[data-recs]');
+      recs.innerHTML = marked.parse(msg.data);
+      recs.style.display = 'block';
+
+    } else if (msg.type === 'error') {
+      showError(card, msg.data);
+    }
+  }
+
+  function finishProgress(card, success) {
+    const spinner = card.querySelector('[data-spinner]');
+    if (!spinner) return;
+    const dot = document.createElement('div');
+    dot.className = success ? 'progress-done-dot' : 'progress-done-dot';
+    dot.style.background = success ? 'var(--accent)' : '#EF4444';
+    spinner.replaceWith(dot);
+
+    const label = card.querySelector('[data-progress-label]');
+    if (label) label.textContent = success ? 'Complete' : 'Failed';
+
+    // Auto-collapse progress after success
+    if (success) {
+      setTimeout(() => {
+        const header = card.querySelector('.progress-header');
+        const body   = card.querySelector('[data-progress-body]');
+        const chevron = header.querySelector('.progress-chevron');
+        body.classList.remove('visible');
+        chevron.classList.remove('open');
+      }, 800);
+    }
+  }
+
+  function showError(card, message) {
+    const existing = card.querySelector('.error-box');
+    if (existing) return;
+    const box = document.createElement('div');
+    box.className = 'error-box';
+    box.innerHTML = `<span>⚠</span> <span>${escHtml(message)}</span>`;
+    card.appendChild(box);
+  }
+
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;');
+  }
+</script>
+
+</body>
+</html>
